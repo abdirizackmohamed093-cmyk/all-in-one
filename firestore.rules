@@ -1,0 +1,46 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Core Helper Method: Verifies user has passed basic authentication check
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // High-Security Architectural Verification: Reads the user record from the database
+    // to check if their designated role mapping is explicitly matched to 'admin'.
+    function isAdmin() {
+      return isAuthenticated() && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // 1. USERS COLLECTION PROTECTION MATRIX
+    match /users/{userId} {
+      // Users can view or update their individual metadata documents cleanly.
+      allow read, update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      // Allows new sign-ups to register their document identity profile mapping.
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      // Absolute restriction: Nobody can delete user records except explicit system tools.
+      allow delete: if isAdmin();
+    }
+
+    // 2. PRODUCTS COLLECTION PROTECTION MATRIX
+    match /products/{productId} {
+      // Global read access enabled to optimize open catalog discovery.
+      allow read: if true;
+      // Operational safety: Restricts write management to validated administrators.
+      allow write: if isAdmin();
+    }
+
+    // 3. ORDERS COLLECTION PROTECTION MATRIX
+    match /orders/{orderId} {
+      // Customers can only pull lists matching their distinct buyer UID.
+      allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+      // Customers can initialize checkout purchases seamlessly.
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Fulfillment states (e.g., changing 'Processing' to 'Dispatched') are reserved for admins.
+      allow update, delete: if isAdmin();
+    }
+  }
+}
