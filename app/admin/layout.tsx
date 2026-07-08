@@ -1,4 +1,5 @@
 import { AuthUserProvider } from "@/context/AuthContext";
+import { CartProvider } from "@/context/CartContext";
 
 export default function AdminLayout({
   children,
@@ -7,7 +8,9 @@ export default function AdminLayout({
 }) {
   return (
     <AuthUserProvider>
-      {children}
+      <CartProvider>
+        {children}
+      </CartProvider>
     </AuthUserProvider>
   );
 }
