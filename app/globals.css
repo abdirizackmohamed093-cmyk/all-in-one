@@ -1,39 +1,62 @@
+@import "tailwindcss";
+
 @layer base {
   :root {
     /* Backgrounds & Surfaces */
-    --background: 0 0% 100%;       /* Pure White secondary canvas */
-    --foreground: 20 native-dark;  /* Charcoal baseline */
+    --background: 0 0% 100%;
+    --foreground: 20 14% 15%;      /* Charcoal — fixed invalid value */
     --card: 0 0% 98%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
     /* Brand Corporate Identity */
-    --primary: 345 75% 22%;        /* #630320 - Premium Deep Burgundy */
+    --primary: 345 75% 22%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 0 0% 100%;       /* Crisp White corporate surface */
+    --secondary: 0 0% 100%;
     --secondary-foreground: 240 5.9% 10%;
 
-    /* Luxury Accents */
-    --accent: 43 51% 56%;          /* #C5A059 - Metallic Soft Gold */
+    --accent: 43 51% 56%;
     --accent-foreground: 345 75% 22%;
 
-    /* UI Structural Tokens */
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 345 75% 22%;          /* Focus rings state uses Burgundy */
-    
-    --radius: 0.5rem;             /* Sleek, professional modern corner radius */
+    --ring: 345 75% 22%;
+
+    --radius: 0.5rem;
   }
 
   .dark {
-    /* Dark mode specifications to be locked down later for complete premium accessibility */
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+
+    @layer base {
+  :root {
+    /* ...existing tokens... */
+
+    /* Conversion & Psychology Palette */
+    --success: 142 71% 35%;        /* Trust green — "In Stock", order confirmed */
+    --success-foreground: 0 0% 98%;
+
+    --urgency: 24 95% 53%;         /* Warm orange — flash deals, countdown timers */
+    --urgency-foreground: 0 0% 100%;
+
+    --discount: 0 84% 55%;         /* Red — sale price, % off badges */
+    --discount-foreground: 0 0% 100%;
+
+    --cta: 345 75% 28%;            /* Slightly brighter burgundy for primary buttons */
+    --cta-hover: 345 80% 22%;
+  }
+}
   }
 }

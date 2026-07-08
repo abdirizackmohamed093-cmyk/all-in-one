@@ -34,4 +34,19 @@ module.exports = {
     },
   },
   plugins: [],
+  colors: {
+  // ...existing...
+  success: {
+    DEFAULT: "hsl(var(--success))",
+    foreground: "hsl(var(--success-foreground))",
+  },
+  urgency: {
+    DEFAULT: "hsl(var(--urgency))",
+    foreground: "hsl(var(--urgency-foreground))",
+  },
+  discount: {
+    DEFAULT: "hsl(var(--discount))",
+    foreground: "hsl(var(--discount-foreground))",
+  },
+},
 };
