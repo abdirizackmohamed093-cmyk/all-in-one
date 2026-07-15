@@ -4,7 +4,21 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchOrders, Order, OrderStatus } from "@/lib/firebase/orders";
 import { fetchCustomers } from "@/lib/firebase/customers";
-import { Loader2 } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, ShoppingBag, Users, Wallet } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+  CartesianGrid,
+} from "recharts";
 
 const formatCurrency = (amount: number) =>
   new Intl.NumberFormat("en-KE", {
@@ -12,23 +26,6 @@ const formatCurrency = (amount: number) =>
     currency: "KES",
     minimumFractionDigits: 0,
   }).format(amount);
-
-const formatOrderDate = (createdAt: any): string => {
-  if (!createdAt) return "";
-  try {
-    const date =
-      typeof createdAt?.toDate === "function" ? createdAt.toDate() : new Date(createdAt);
-    if (isNaN(date.getTime())) return "";
-    return new Intl.DateTimeFormat("en-KE", {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(date);
-  } catch {
-    return "";
-  }
-};
 
 const toDate = (createdAt: any): Date | null => {
   if (!createdAt) return null;
@@ -41,12 +38,37 @@ const toDate = (createdAt: any): Date | null => {
   }
 };
 
-const statusStyles: Record<OrderStatus, string> = {
-  Processing: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-  Dispatched: "bg-blue-500/10 text-blue-400 border border-blue-500/20",
-  Delivered: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-  Cancelled: "bg-red-500/10 text-red-400 border border-red-500/20",
+const statusColors: Record<OrderStatus, string> = {
+  Processing: "#F59E0B",
+  Dispatched: "#3B82F6",
+  Delivered: "#10B981",
+  Cancelled: "#EF4444",
 };
+
+const statusBadgeStyles: Record<OrderStatus, string> = {
+  Processing: "bg-amber-50 text-amber-700 border-amber-200",
+  Dispatched: "bg-blue-50 text-blue-700 border-blue-200",
+  Delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  Cancelled: "bg-red-50 text-red-700 border-red-200",
+};
+
+function TrendBadge({ value }: { value: number | null }) {
+  if (value === null) {
+    return <span className="text-[11px] text-neutral-400">No prior data yet</span>;
+  }
+  const isUp = value >= 0;
+  return (
+    <span
+      className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
+        isUp ? "text-emerald-600" : "text-red-500"
+      }`}
+    >
+      {isUp ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+      {isUp ? "+" : ""}
+      {value.toFixed(1)}% vs last month
+    </span>
+  );
+}
 
 export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -64,181 +86,269 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-24">
-        <Loader2 className="w-5 h-5 animate-spin text-white/40" />
+        <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
       </div>
     );
   }
 
-  const grossRevenue = orders
-    .filter((o) => o.status !== "Cancelled")
-    .reduce((sum, o) => sum + (o.total || 0), 0);
+  const nonCancelled = orders.filter((o) => o.status !== "Cancelled");
+  const grossRevenue = nonCancelled.reduce((sum, o) => sum + (o.total || 0), 0);
+  const avgOrderValue = nonCancelled.length > 0 ? grossRevenue / nonCancelled.length : 0;
+
+  const now = new Date();
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+  const thisMonthOrders = nonCancelled.filter((o) => {
+    const d = toDate(o.createdAt);
+    return d && d >= startOfThisMonth;
+  });
+  const lastMonthOrders = nonCancelled.filter((o) => {
+    const d = toDate(o.createdAt);
+    return d && d >= startOfLastMonth && d < startOfThisMonth;
+  });
+
+  const thisMonthRevenue = thisMonthOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const lastMonthRevenue = lastMonthOrders.reduce((sum, o) => sum + (o.total || 0), 0);
+  const revenueTrend =
+    lastMonthRevenue > 0 ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100 : null;
+
+  const orderCountTrend =
+    lastMonthOrders.length > 0
+      ? ((thisMonthOrders.length - lastMonthOrders.length) / lastMonthOrders.length) * 100
+      : null;
 
   const activeOrders = orders.filter(
     (o) => o.status === "Processing" || o.status === "Dispatched"
   ).length;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const ordersToday = orders.filter((o) => {
-    const d = toDate(o.createdAt);
-    return d && d >= today;
-  }).length;
+  // Last 7 days revenue trend
+  const last7Days = Array.from({ length: 7 }).map((_, i) => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - (6 - i));
+    return d;
+  });
+  const trendData = last7Days.map((day) => {
+    const nextDay = new Date(day);
+    nextDay.setDate(day.getDate() + 1);
+    const dayRevenue = nonCancelled
+      .filter((o) => {
+        const d = toDate(o.createdAt);
+        return d && d >= day && d < nextDay;
+      })
+      .reduce((sum, o) => sum + (o.total || 0), 0);
+    return {
+      label: day.toLocaleDateString("en-KE", { weekday: "short" }),
+      revenue: dayRevenue,
+    };
+  });
+
+  // Status distribution
+  const statusCounts: Record<OrderStatus, number> = {
+    Processing: 0,
+    Dispatched: 0,
+    Delivered: 0,
+    Cancelled: 0,
+  };
+  orders.forEach((o) => {
+    statusCounts[o.status] = (statusCounts[o.status] || 0) + 1;
+  });
+  const statusData = (Object.keys(statusCounts) as OrderStatus[])
+    .filter((s) => statusCounts[s] > 0)
+    .map((s) => ({ name: s, value: statusCounts[s], color: statusColors[s] }));
+
+  // Top products by units sold
+  const productTotals: Record<string, number> = {};
+  orders.forEach((o) => {
+    o.items.forEach((item) => {
+      productTotals[item.name] = (productTotals[item.name] || 0) + item.quantity;
+    });
+  });
+  const topProducts = Object.entries(productTotals)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, qty]) => ({ name: name.length > 14 ? name.slice(0, 14) + "…" : name, qty }));
 
   const recentOrders = orders.slice(0, 5);
 
-  const unconfirmedPayments = orders.filter(
-    (o) => o.status === "Processing" && !o.mpesaReference
-  );
-
-  const now = Date.now();
-  const staleProcessing = orders.filter((o) => {
-    if (o.status !== "Processing") return false;
-    const d = toDate(o.createdAt);
-    if (!d) return false;
-    return now - d.getTime() > 48 * 60 * 60 * 1000;
-  });
-
-  const performanceKPIs = [
+  const kpis = [
     {
       title: "Gross Revenue",
       value: formatCurrency(grossRevenue),
-      trend: `${orders.length} total orders`,
-      color: "text-emerald-400",
+      trend: <TrendBadge value={revenueTrend} />,
+      icon: Wallet,
     },
     {
       title: "Active Orders",
-      value: `${activeOrders} Pending`,
-      trend: `${orders.filter((o) => o.status === "Dispatched").length} dispatched`,
-      color: "text-amber-400",
+      value: `${activeOrders}`,
+      trend: <TrendBadge value={orderCountTrend} />,
+      icon: ShoppingBag,
     },
     {
       title: "Total Customers",
-      value: `${customerCount} Users`,
-      trend: "Registered accounts",
-      color: "text-blue-400",
+      value: `${customerCount}`,
+      trend: <span className="text-[11px] text-neutral-400">Registered accounts</span>,
+      icon: Users,
     },
     {
-      title: "Orders Today",
-      value: `${ordersToday}`,
-      trend: formatOrderDate(new Date()) ? "Since midnight" : "",
-      color: "text-accent",
+      title: "Average Order Value",
+      value: formatCurrency(avgOrderValue),
+      trend: (
+        <span className="text-[11px] text-neutral-400">
+          Across {nonCancelled.length} orders
+        </span>
+      ),
+      icon: TrendingUp,
     },
   ];
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-light tracking-tight">Operational Overview</h1>
-        <p className="text-xs font-light text-white/50 mt-1">
-          Real-time data for the ALL IN ONE platform in Kenya.
+        <h1 className="text-2xl font-bold text-neutral-900">Dashboard</h1>
+        <p className="text-sm text-neutral-500 mt-1">
+          Real-time overview of the ALL IN ONE store.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {performanceKPIs.map((kpi, idx) => (
-          <div key={idx} className="bg-[#14171A] border border-white/5 rounded p-6 space-y-3 shadow-xl">
-            <span className="text-[10px] uppercase tracking-widest text-white/40 font-semibold">
-              {kpi.title}
-            </span>
-            <div className={`text-2xl font-light tracking-tight ${kpi.color}`}>{kpi.value}</div>
-            <p className="text-[11px] font-light text-white/50">{kpi.trend}</p>
-          </div>
-        ))}
+      {/* KPI cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {kpis.map((kpi, idx) => {
+          const Icon = kpi.icon;
+          return (
+            <div
+              key={idx}
+              className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-semibold text-neutral-500">{kpi.title}</span>
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                  <Icon className="w-4 h-4 text-blue-600" />
+                </div>
+              </div>
+              <div className="text-2xl font-bold text-neutral-900 mb-1">{kpi.value}</div>
+              {kpi.trend}
+            </div>
+          );
+        })}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <div className="xl:col-span-2 bg-[#14171A] border border-white/5 rounded p-6 space-y-6 shadow-xl">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs uppercase tracking-widest text-white/80 font-semibold">
-              Live Fulfillment Stream
-            </h3>
-            <Link
-              href="/admin/orders"
-              className="text-[11px] font-medium uppercase tracking-wider text-accent hover:underline"
-            >
-              Manage All Logs
-            </Link>
-          </div>
-
-          {recentOrders.length === 0 ? (
-            <p className="text-xs text-white/40 py-6 text-center">
-              No orders yet. They'll appear here once customers check out.
+      {/* Charts row */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Revenue trend */}
+        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-neutral-900 mb-4">Revenue — Last 7 Days</h3>
+          {grossRevenue === 0 ? (
+            <p className="text-xs text-neutral-400 py-16 text-center">
+              No revenue yet. Chart will populate as orders come in.
             </p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs font-light">
-                <thead>
-                  <tr className="border-b border-white/5 text-white/40 uppercase tracking-wider text-[10px] font-medium">
-                    <th className="pb-3">Order ID</th>
-                    <th className="pb-3">Customer</th>
-                    <th className="pb-3">Items</th>
-                    <th className="pb-3">Value</th>
-                    <th className="pb-3">Fulfillment</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/5 text-white/80">
-                  {recentOrders.map((order) => {
-                    const itemSummary =
-                      order.items.length === 1
-                        ? order.items[0].name
-                        : `${order.items[0]?.name} +${order.items.length - 1} more`;
-                    return (
-                      <tr key={order.id} className="group hover:bg-white/[0.01] transition-colors">
-                        <td className="py-4 font-mono text-accent">{order.id.slice(0, 8)}</td>
-                        <td className="py-4 font-normal">{order.customerName}</td>
-                        <td className="py-4 text-white/60">{itemSummary}</td>
-                        <td className="py-4 font-medium">{formatCurrency(order.total)}</td>
-                        <td className="py-4">
-                          <span
-                            className={`px-2 py-0.5 rounded-sm text-[10px] font-medium tracking-wide uppercase ${statusStyles[order.status]}`}
-                          >
-                            {order.status}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={trendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E2E8F0" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#3B82F6"
+                  strokeWidth={2.5}
+                  dot={{ r: 3, fill: "#3B82F6" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
           )}
         </div>
 
-        <div className="bg-[#14171A] border border-white/5 rounded p-6 space-y-6 shadow-xl">
-          <h3 className="text-xs uppercase tracking-widest text-white/80 font-semibold">
-            Needs Attention
-          </h3>
-
-          {unconfirmedPayments.length === 0 && staleProcessing.length === 0 ? (
-            <p className="text-xs text-white/40">Nothing needs attention right now.</p>
+        {/* Status donut */}
+        <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-neutral-900 mb-4">Orders by Status</h3>
+          {statusData.length === 0 ? (
+            <p className="text-xs text-neutral-400 py-16 text-center">No orders yet.</p>
           ) : (
-            <ul className="space-y-4 text-xs font-light text-white/70">
-              {unconfirmedPayments.length > 0 && (
-                <li className="flex items-start gap-3 p-3 bg-white/[0.02] border border-white/5 rounded">
-                  <span className="text-amber-400 text-sm font-bold leading-none">&bull;</span>
-                  <div>
-                    <p className="font-medium text-white/90">Unconfirmed Payments</p>
-                    <p className="text-[11px] text-white/40 mt-0.5">
-                      {unconfirmedPayments.length} order
-                      {unconfirmedPayments.length > 1 ? "s" : ""} still Processing with no
-                      M-Pesa reference code.
-                    </p>
+            <>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={45}
+                    outerRadius={70}
+                    paddingAngle={2}
+                  >
+                    {statusData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E2E8F0" }} />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-2 justify-center">
+                {statusData.map((s) => (
+                  <div key={s.name} className="flex items-center gap-1.5 text-[11px] text-neutral-600">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
+                    {s.name} ({s.value})
                   </div>
-                </li>
-              )}
-              {staleProcessing.length > 0 && (
-                <li className="flex items-start gap-3 p-3 bg-white/[0.02] border border-white/5 rounded">
-                  <span className="text-red-400 text-sm font-bold leading-none">&bull;</span>
-                  <div>
-                    <p className="font-medium text-white/90">Stalled Orders</p>
-                    <p className="text-[11px] text-white/40 mt-0.5">
-                      {staleProcessing.length} order{staleProcessing.length > 1 ? "s" : ""} stuck
-                      in Processing for over 48 hours.
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Top products bar */}
+        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
+          <h3 className="text-sm font-bold text-neutral-900 mb-4">Top 5 Products by Units Sold</h3>
+          {topProducts.length === 0 ? (
+            <p className="text-xs text-neutral-400 py-16 text-center">No sales data yet.</p>
+          ) : (
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={topProducts}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E2E8F0" }} />
+                <Bar dataKey="qty" fill="#3B82F6" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        {/* Recent orders */}
+        <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-bold text-neutral-900">Recent Orders</h3>
+            <Link href="/admin/orders" className="text-[11px] font-semibold text-blue-600 hover:underline">
+              View all
+            </Link>
+          </div>
+          {recentOrders.length === 0 ? (
+            <p className="text-xs text-neutral-400 py-8 text-center">No orders yet.</p>
+          ) : (
+            <div className="space-y-3">
+              {recentOrders.map((order) => (
+                <div key={order.id} className="flex items-center justify-between">
+                  <div className="min-w-0">
+                    <p className="text-xs font-semibold text-neutral-900 truncate">
+                      {order.customerName}
                     </p>
+                    <p className="text-[11px] text-neutral-400">{formatCurrency(order.total)}</p>
                   </div>
-                </li>
-              )}
-            </ul>
+                  <span
+                    className={`text-[10px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded border shrink-0 ml-2 ${statusBadgeStyles[order.status]}`}
+                  >
+                    {order.status}
+                  </span>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>
