@@ -1,60 +1,55 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
-import { auth, db } from "@/firebase/config";
+import { createContext, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { AuthUserContextType } from "@/types/auth";
+import { auth, db } from "@/lib/firebase/config";
 
-const AuthUserContext = createContext<AuthUserContextType>({
+interface AuthContextType {
+  user: User | null;
+  isAdmin: boolean;
+  loading: boolean;
+  logout: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
   isAdmin: false,
+  loading: true,
+  logout: async () => {},
 });
 
-export const AuthUserProvider = ({ children }: { children: React.ReactNode }) => {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // onAuthStateChanged automatically listens to authentication status transitions
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setLoading(true);
+      setUser(currentUser);
+
       if (currentUser) {
-        setUser(currentUser);
-        
-        // Performance & Scalability optimized check:
-        // Fetch the custom user document role from Firestore to determine admin validation privileges safely.
-        try {
-          const userDocRef = doc(db, "users", currentUser.uid);
-          const userDoc = await getDoc(userDocRef);
-          
-          if (userDoc.exists() && userDoc.data()?.role === "admin") {
-            setIsAdmin(true);
-          } else {
-            setIsAdmin(false);
-          }
-        } catch (error) {
-          console.error("Error authenticating admin role structure:", error);
-          setIsAdmin(false);
-        }
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        setIsAdmin(userDoc.exists() && userDoc.data()?.role === "admin");
       } else {
-        setUser(null);
         setIsAdmin(false);
       }
+
       setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  return (
-    <AuthUserContext.Provider value={{ user, loading, isAdmin }}>
-      {children}
-    </AuthUserContext.Provider>
-  );
-};
+  const logout = async () => {
+    await signOut(auth);
+  };
 
-// Custom layout hook for consuming the context cleanly inside premium client interfaces
-export const useAuth = () => useContext(AuthUserContext);
+  return (
+    <AuthContext.Provider value={{ user, isAdmin, loading, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export const useAuth = () => useContext(AuthContext);

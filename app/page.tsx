@@ -1,15 +1,13 @@
-"use client";
-
+﻿"use client";
 import React, { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
 import ProductCard, { Product } from "@/components/products/ProductCard";
 import Footer from "@/components/Footer";
+import BrandsSection from "@/components/storefront/BrandsSection";
 import { fetchLiveProducts } from "@/lib/firebase/products";
-
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     async function loadCatalog() {
       const data = await fetchLiveProducts();
@@ -18,7 +16,6 @@ export default function Home() {
     }
     loadCatalog();
   }, []);
-
   return (
     <div className="min-h-screen bg-white text-neutral-900 flex flex-col justify-between">
       <div>
@@ -36,7 +33,7 @@ export default function Home() {
           
           {loading ? (
             /* Elegant loading skeleton cards mimicking high-end wireframes */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-8">
               {[1, 2, 3].map((skeletonId) => (
                 <div key={skeletonId} className="w-full max-w-sm mx-auto flex flex-col gap-4 animate-pulse">
                   <div className="w-full aspect-[3/4] bg-neutral-100 rounded border border-neutral-200" />
@@ -51,7 +48,7 @@ export default function Home() {
               <p className="text-sm text-neutral-500">The showroom ledger is currently empty.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 elements-center justify-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-8">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -59,6 +56,8 @@ export default function Home() {
           )}
         </main>
       </div>
+
+      <BrandsSection />
 
       <Footer />
     </div>

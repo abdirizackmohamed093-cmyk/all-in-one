@@ -1,10 +1,6 @@
+import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
-import "./globals.css";
-
-export const metadata = {
-  title: "ALL IN ONE SHOP",
-  description: "Premium E-Commerce Platform",
-};
+import "@/app/globals.css"; // Make sure your global styles path matches
 
 export default function RootLayout({
   children,
@@ -13,10 +9,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">
-        <CartProvider>
-          {children}
-        </CartProvider>
+      <body>
+        <AuthProvider>
+          <CartProvider>
+            {children}
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

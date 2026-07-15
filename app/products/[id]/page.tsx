@@ -7,7 +7,6 @@ import { useCart } from "@/context/CartContext";
 import { Product } from "@/components/products/ProductCard";
 import { fetchSingleProduct } from "@/lib/firebase/products";
 import { ShoppingBag, ArrowLeft, ShieldCheck, Truck, RotateCcw, Check } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 interface PageProps {
@@ -17,7 +16,7 @@ interface PageProps {
 export default function ProductDetailPage({ params }: PageProps) {
   const { id } = React.use(params);
   const { addToCart } = useCart();
-  
+
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
@@ -45,7 +44,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: product.isFlashSale && product.flashSalePrice ? product.flashSalePrice : product.price,
       imageUrl: product.imageUrl,
       stockCount: product.stockCount,
     }, quantity);
@@ -92,27 +91,26 @@ export default function ProductDetailPage({ params }: PageProps) {
     );
   }
 
+  const showFlashPrice = product.isFlashSale && product.flashSalePrice;
+
   return (
     <div className="min-h-screen bg-white text-neutral-900 flex flex-col justify-between">
       <div>
         <Header />
-        
+
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <Link href="/" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-colors mb-12">
             <ArrowLeft className="w-3.5 h-3.5" /> Return to Curation
           </Link>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
+
             <div className="lg:col-span-7 w-full max-w-2xl mx-auto lg:max-w-none">
               <div className="relative w-full aspect-[3/4] bg-neutral-100 rounded border border-neutral-200 overflow-hidden">
-                <Image
+                <img
                   src={product.imageUrl}
                   alt={product.name}
-                  fill
-                  priority
-                  className="object-cover object-center"
-                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                 />
               </div>
             </div>
@@ -124,9 +122,21 @@ export default function ProductDetailPage({ params }: PageProps) {
               <h1 className="font-serif text-2xl sm:text-3xl font-medium tracking-tight text-neutral-900 leading-tight mb-4">
                 {product.name}
               </h1>
-              <p className="text-xl font-serif font-semibold text-neutral-900 mb-6">
-                {formatCurrency(product.price)}
-              </p>
+
+              {showFlashPrice ? (
+                <div className="flex items-center gap-3 mb-6">
+                  <p className="text-xl font-serif font-semibold text-red-600">
+                    {formatCurrency(product.flashSalePrice!)}
+                  </p>
+                  <p className="text-sm font-serif text-neutral-400 line-through">
+                    {formatCurrency(product.price)}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-xl font-serif font-semibold text-neutral-900 mb-6">
+                  {formatCurrency(product.price)}
+                </p>
+              )}
 
               <hr className="border-neutral-200 my-2" />
 
@@ -143,14 +153,14 @@ export default function ProductDetailPage({ params }: PageProps) {
               {product.stockCount > 0 ? (
                 <div className="mt-6 flex flex-col gap-4">
                   <div className="flex items-center justify-between border border-neutral-300 rounded px-4 py-2 w-32 bg-white">
-                    <button 
+                    <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="text-neutral-500 hover:text-neutral-900 font-bold px-2 text-sm"
                     >
                       -
                     </button>
                     <span className="text-sm font-sans font-medium w-6 text-center select-none">{quantity}</span>
-                    <button 
+                    <button
                       onClick={() => setQuantity(Math.min(product.stockCount, quantity + 1))}
                       className="text-neutral-500 hover:text-neutral-900 font-bold px-2 text-sm"
                     >
@@ -162,8 +172,8 @@ export default function ProductDetailPage({ params }: PageProps) {
                     onClick={handleAddToBag}
                     disabled={isAdded}
                     className={`w-full py-4 text-xs font-sans font-bold tracking-widest uppercase rounded shadow-lg transition-all duration-200 flex items-center justify-center gap-3 ${
-                      isAdded 
-                        ? "bg-emerald-600 text-white" 
+                      isAdded
+                        ? "bg-emerald-600 text-white"
                         : "bg-neutral-900 hover:bg-neutral-800 text-white"
                     }`}
                   >

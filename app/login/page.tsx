@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase/config";
 import { ArrowLeft, Lock, Mail, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
@@ -20,8 +21,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/");
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+      // Role lives in Firestore, not on the Auth user object, so we read it
+      // here to decide where to send this person after login.
+      const userDoc = await getDoc(doc(db, "users", userCredential.user.uid));
+      const isAdmin = userDoc.exists() && userDoc.data()?.role === "admin";
+
+      router.push(isAdmin ? "/admin" : "/");
     } catch (err: any) {
       console.error(err);
       // Clean up Firebase error messages for a premium user experience

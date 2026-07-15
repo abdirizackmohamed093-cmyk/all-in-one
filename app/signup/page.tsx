@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase/config";
+import { createUserProfile } from "@/services/firebase/users.service";
 import { ArrowLeft, Lock, Mail, User, Loader2 } from "lucide-react";
 
 export default function SignupPage() {
@@ -21,7 +22,17 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Auth only creates the identity (uid/email/password). Everything
+      // else about this user — role, name, future order history — lives
+      // in Firestore, so we create that profile doc right away.
+      await createUserProfile({
+        uid: userCredential.user.uid,
+        email,
+        name,
+      });
+
       router.push("/");
     } catch (err: any) {
       console.error(err);

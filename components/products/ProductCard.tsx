@@ -1,9 +1,8 @@
-"use client";
+﻿"use client";
 
 import React, { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { ShoppingBag, Check } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export interface Product {
@@ -12,7 +11,11 @@ export interface Product {
   price: number;
   imageUrl: string;
   category: string;
+  brand?: string;
   stockCount: number;
+  isFlashSale?: boolean;
+  flashSalePrice?: number;
+  flashSaleEndsAt?: any; // Firestore Timestamp
 }
 
 interface ProductCardProps {
@@ -34,65 +37,69 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAddClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: product.isFlashSale && product.flashSalePrice ? product.flashSalePrice : product.price,
       imageUrl: product.imageUrl,
       stockCount: product.stockCount,
     }, 1);
 
-    // Trigger instant visual feedback
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
 
+  const showFlashPrice = product.isFlashSale && product.flashSalePrice;
+
   return (
-    <div className="group relative flex flex-col bg-white overflow-hidden transition-all duration-300 w-full max-w-sm mx-auto">
-      
+    <div className="group relative flex flex-col bg-white overflow-hidden transition-all duration-300 w-full">
+
       {/* Clickable Image Container */}
-      <Link href={`/products/${product.id}`} className="relative w-full aspect-[3/4] bg-neutral-100 overflow-hidden rounded border border-neutral-200 block">
-        <Image
+      <Link href={`/products/${product.id}`} className="relative w-full aspect-square bg-neutral-100 overflow-hidden rounded border border-neutral-200 block">
+        <img
           src={product.imageUrl || "/placeholder-product.jpg"}
           alt={product.name}
-          fill
-          priority
-          className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        
-        {product.stockCount <= 3 && product.stockCount > 0 && (
-          <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-red-600 text-[9px] font-sans tracking-wider uppercase font-bold px-2 py-1 rounded-sm shadow-sm z-10">
-            Only {product.stockCount} Left
+
+        {showFlashPrice && (
+          <span className="absolute top-2 right-2 bg-red-600 text-white text-[8px] font-sans tracking-wider uppercase font-bold px-1.5 py-0.5 rounded-sm shadow-sm z-10">
+            Flash Sale
           </span>
         )}
-        
+
+        {product.stockCount <= 3 && product.stockCount > 0 && (
+          <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-red-600 text-[8px] font-sans tracking-wider uppercase font-bold px-1.5 py-0.5 rounded-sm shadow-sm z-10">
+            {product.stockCount} Left
+          </span>
+        )}
+
         {product.stockCount === 0 && (
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center text-white text-xs font-sans tracking-widest uppercase font-semibold z-10">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center text-white text-[10px] font-sans tracking-widest uppercase font-semibold z-10">
             Sold Out
           </div>
         )}
 
         {product.stockCount > 0 && (
-          <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-[0.16,1,0.3,1] bg-gradient-to-t from-black/40 to-transparent z-10">
+          <div className="absolute inset-x-0 bottom-0 p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-[0.16,1,0.3,1] bg-gradient-to-t from-black/40 to-transparent z-10">
             <button
               onClick={handleAddClick}
               disabled={isAdded}
-              className={`w-full py-3 text-[10px] font-sans font-bold tracking-widest uppercase rounded shadow-md transition-all duration-200 flex items-center justify-center gap-2 ${
-                isAdded 
-                  ? "bg-emerald-600 text-white" 
+              className={`w-full py-2 text-[9px] font-sans font-bold tracking-widest uppercase rounded shadow-md transition-all duration-200 flex items-center justify-center gap-1.5 ${
+                isAdded
+                  ? "bg-emerald-600 text-white"
                   : "bg-white text-neutral-900 hover:bg-neutral-900 hover:text-white"
               }`}
             >
               {isAdded ? (
                 <>
-                  <Check className="w-3.5 h-3.5" />
-                  Added To Bag!
+                  <Check className="w-3 h-3" />
+                  Added!
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <ShoppingBag className="w-3 h-3" />
                   Add To Bag
                 </>
               )}
@@ -102,22 +109,33 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* Product Information Details */}
-      <div className="pt-4 pb-2 flex flex-col justify-between flex-1">
+      <div className="pt-2.5 pb-1 flex flex-col justify-between flex-1">
         <div>
-          <p className="text-[10px] tracking-widest uppercase text-neutral-500 font-semibold mb-1">
+          <p className="text-[9px] tracking-widest uppercase text-neutral-500 font-semibold mb-0.5">
             {product.category}
           </p>
           <Link href={`/products/${product.id}`}>
-            <h3 className="font-sans text-sm font-medium text-neutral-900 tracking-tight line-clamp-2 group-hover:text-neutral-600 transition-colors duration-200">
+            <h3 className="font-sans text-xs font-medium text-neutral-900 tracking-tight line-clamp-2 group-hover:text-neutral-600 transition-colors duration-200">
               {product.name}
             </h3>
           </Link>
         </div>
-        
-        <div className="mt-2 flex items-center justify-between">
-          <span className="text-sm font-semibold font-serif text-neutral-900">
-            {formatCurrency(product.price)}
-          </span>
+
+        <div className="mt-1.5 flex items-center gap-2">
+          {showFlashPrice ? (
+            <>
+              <span className="text-xs font-semibold font-serif text-red-600">
+                {formatCurrency(product.flashSalePrice!)}
+              </span>
+              <span className="text-[10px] text-neutral-400 line-through">
+                {formatCurrency(product.price)}
+              </span>
+            </>
+          ) : (
+            <span className="text-xs font-semibold font-serif text-neutral-900">
+              {formatCurrency(product.price)}
+            </span>
+          )}
         </div>
       </div>
     </div>
