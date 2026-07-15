@@ -250,7 +250,7 @@ export default function AdminDashboardPage() {
                 <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
+                 formatter={(value: any) => formatCurrency(Number(value))}
                   contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid #E2E8F0" }}
                 />
                 <Line
