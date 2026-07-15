@@ -51,12 +51,16 @@ export default function ProductCard({ product }: ProductCardProps) {
   };
 
   const showFlashPrice = product.isFlashSale && product.flashSalePrice;
+  const discountPercent =
+    showFlashPrice && product.price > 0
+      ? Math.round(((product.price - product.flashSalePrice!) / product.price) * 100)
+      : 0;
 
   return (
     <div className="group relative flex flex-col bg-white overflow-hidden transition-all duration-300 w-full">
 
       {/* Clickable Image Container */}
-      <Link href={`/products/${product.id}`} className="relative w-full aspect-square bg-neutral-100 overflow-hidden rounded border border-neutral-200 block">
+      <Link href={`/products/${product.id}`} className="relative w-full aspect-square bg-neutral-100 overflow-hidden rounded-lg border border-neutral-200 block">
         <img
           src={product.imageUrl || "/placeholder-product.jpg"}
           alt={product.name}
@@ -64,42 +68,42 @@ export default function ProductCard({ product }: ProductCardProps) {
         />
 
         {showFlashPrice && (
-          <span className="absolute top-2 right-2 bg-red-600 text-white text-[8px] font-sans tracking-wider uppercase font-bold px-1.5 py-0.5 rounded-sm shadow-sm z-10">
-            Flash Sale
+          <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-sans tracking-wider uppercase font-bold px-2 py-1 rounded shadow-sm z-10">
+            -{discountPercent}%
           </span>
         )}
 
         {product.stockCount <= 3 && product.stockCount > 0 && (
-          <span className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-red-600 text-[8px] font-sans tracking-wider uppercase font-bold px-1.5 py-0.5 rounded-sm shadow-sm z-10">
+          <span className="absolute top-2 left-2 bg-white/95 backdrop-blur-sm text-red-600 text-[10px] font-sans tracking-wider uppercase font-bold px-2 py-1 rounded shadow-sm z-10">
             {product.stockCount} Left
           </span>
         )}
 
         {product.stockCount === 0 && (
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center text-white text-[10px] font-sans tracking-widest uppercase font-semibold z-10">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center text-white text-xs font-sans tracking-widest uppercase font-semibold z-10">
             Sold Out
           </div>
         )}
 
         {product.stockCount > 0 && (
-          <div className="absolute inset-x-0 bottom-0 p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-[0.16,1,0.3,1] bg-gradient-to-t from-black/40 to-transparent z-10">
+          <div className="absolute inset-x-0 bottom-0 p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-[0.16,1,0.3,1] bg-gradient-to-t from-black/50 to-transparent z-10">
             <button
               onClick={handleAddClick}
               disabled={isAdded}
-              className={`w-full py-2 text-[9px] font-sans font-bold tracking-widest uppercase rounded shadow-md transition-all duration-200 flex items-center justify-center gap-1.5 ${
+              className={`w-full py-2.5 text-[11px] font-sans font-bold tracking-widest uppercase rounded-md shadow-md transition-all duration-200 flex items-center justify-center gap-1.5 ${
                 isAdded
                   ? "bg-emerald-600 text-white"
-                  : "bg-white text-neutral-900 hover:bg-neutral-900 hover:text-white"
+                  : "bg-white text-neutral-900 hover:bg-burgundy hover:text-white"
               }`}
             >
               {isAdded ? (
                 <>
-                  <Check className="w-3 h-3" />
+                  <Check className="w-3.5 h-3.5" />
                   Added!
                 </>
               ) : (
                 <>
-                  <ShoppingBag className="w-3 h-3" />
+                  <ShoppingBag className="w-3.5 h-3.5" />
                   Add To Bag
                 </>
               )}
@@ -109,30 +113,30 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* Product Information Details */}
-      <div className="pt-2.5 pb-1 flex flex-col justify-between flex-1">
+      <div className="pt-3 pb-1 flex flex-col justify-between flex-1">
         <div>
-          <p className="text-[9px] tracking-widest uppercase text-neutral-500 font-semibold mb-0.5">
+          <span className="inline-block text-[10px] tracking-wide uppercase text-burgundy font-bold mb-1.5">
             {product.category}
-          </p>
+          </span>
           <Link href={`/products/${product.id}`}>
-            <h3 className="font-sans text-xs font-medium text-neutral-900 tracking-tight line-clamp-2 group-hover:text-neutral-600 transition-colors duration-200">
+            <h3 className="font-sans text-sm font-semibold text-neutral-900 tracking-tight line-clamp-2 leading-snug group-hover:text-burgundy transition-colors duration-200">
               {product.name}
             </h3>
           </Link>
         </div>
 
-        <div className="mt-1.5 flex items-center gap-2">
+        <div className="mt-2 flex items-center gap-2">
           {showFlashPrice ? (
             <>
-              <span className="text-xs font-semibold font-serif text-red-600">
+              <span className="text-base font-bold font-serif text-red-600">
                 {formatCurrency(product.flashSalePrice!)}
               </span>
-              <span className="text-[10px] text-neutral-400 line-through">
+              <span className="text-xs text-neutral-400 line-through">
                 {formatCurrency(product.price)}
               </span>
             </>
           ) : (
-            <span className="text-xs font-semibold font-serif text-neutral-900">
+            <span className="text-base font-bold font-serif text-neutral-900">
               {formatCurrency(product.price)}
             </span>
           )}
