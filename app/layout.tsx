@@ -1,6 +1,7 @@
 import Script from "next/script";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
+import TawkIdentify from "@/components/TawkIdentify";
 import "@/app/globals.css"; // Make sure your global styles path matches
 
 export default function RootLayout({
@@ -15,6 +16,7 @@ export default function RootLayout({
           <CartProvider>
             {children}
           </CartProvider>
+          <TawkIdentify />
         </AuthProvider>
 
         <Script id="tawk-to-widget" strategy="afterInteractive">
