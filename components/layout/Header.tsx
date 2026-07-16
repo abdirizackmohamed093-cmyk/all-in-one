@@ -123,29 +123,30 @@ export default function Header() {
       </div>
 
       {/* Category strip */}
-      <div className="bg-primary">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-11 flex items-center gap-6 relative">
-          <div ref={dropdownRef} className="relative">
+     {/* Category strip */}
+      <div className="bg-primary shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center gap-8 relative">
+          <div ref={dropdownRef} className="relative shrink-0">
             <button
               onClick={() => setCategoriesOpen(!categoriesOpen)}
-              className="flex items-center gap-2 text-white text-xs font-bold uppercase tracking-wider hover:opacity-90 transition-opacity"
+              className="flex items-center gap-2.5 text-white text-sm font-bold uppercase tracking-wide hover:opacity-90 transition-opacity bg-black/10 px-4 py-2 rounded-md"
             >
               <Menu className="w-4 h-4" />
-              Category
-              <ChevronDown className="w-3.5 h-3.5" />
+              All Categories
+              <ChevronDown className={`w-4 h-4 transition-transform ${categoriesOpen ? "rotate-180" : ""}`} />
             </button>
 
             {categoriesOpen && (
-              <div className="absolute top-full left-0 mt-0 w-64 bg-white shadow-lg rounded-b-md border border-neutral-200 py-2 z-50">
+              <div className="absolute top-full left-0 mt-2 w-72 bg-white shadow-xl rounded-lg border border-neutral-200 py-2 z-50 overflow-hidden">
                 {categories.length === 0 ? (
-                  <p className="px-4 py-2 text-xs text-neutral-400">No categories yet.</p>
+                  <p className="px-5 py-3 text-sm text-neutral-400">No categories yet.</p>
                 ) : (
                   categories.map((c) => (
                     <Link
                       key={c.id}
                       href={"/shop/" + c.slug}
                       onClick={() => setCategoriesOpen(false)}
-                      className="block px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 hover:text-primary transition-colors"
+                      className="block px-5 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary transition-colors border-b border-neutral-50 last:border-b-0"
                     >
                       {c.name}
                     </Link>
@@ -155,14 +156,17 @@ export default function Header() {
             )}
           </div>
 
-          <nav className="hidden md:flex items-center gap-5">
-            {categories.slice(0, 5).map((c) => (
+          <div className="hidden md:block w-px h-6 bg-white/20 shrink-0" />
+
+          <nav className="hidden md:flex items-center gap-8 overflow-x-auto">
+            {categories.slice(0, 6).map((c) => (
               <Link
                 key={c.id}
                 href={"/shop/" + c.slug}
-                className="text-white text-xs font-medium hover:opacity-80 transition-opacity"
+                className="text-white text-sm font-semibold uppercase tracking-wide hover:text-white/80 transition-colors whitespace-nowrap relative group"
               >
                 {c.name}
+                <span className="absolute -bottom-4 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-200" />
               </Link>
             ))}
           </nav>
