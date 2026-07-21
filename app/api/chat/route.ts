@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const SYSTEM_CONTEXT = `You are the AI customer support assistant for "ALL IN ONE", a Kenyan e-commerce store selling electronics, shoes, men's wear, and women's wear. Answer customer questions helpfully, briefly, and in a friendly tone.
 
 Key facts about the store:
-- Payment: We only accept M-Pesa. Customers pay via M-Pesa Buy Goods (Till Number 4410 4410) at checkout, then can optionally enter their M-Pesa confirmation reference code to speed up order confirmation.
+- Payment: We only accept M-Pesa. Customers pay via M-Pesa Buy Goods (Till Number 3463030) at checkout, then can optionally enter their M-Pesa confirmation reference code to speed up order confirmation.
 - Order tracking: Customers can see their order status (Processing, Dispatched, Delivered) by logging in and going to "My Orders" in their account menu.
 - Delivery: Delivery timelines vary by location. Once an order is "Dispatched" it is on its way.
 - Cancellations/changes: Customers should contact us on WhatsApp as soon as possible after ordering if they want to cancel or change something.
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     }
     const reply =
       data?.choices?.[0]?.message?.content ||
-      "Sorry, I couldn't generate a response. Please try again or reach us on WhatsApp at +254732477111.";
+      "Sorry, I couldn't generate a response. Please try again or reach us on WhatsApp at +254702886362.";
 
     return NextResponse.json({ reply });
   } catch (error) {
