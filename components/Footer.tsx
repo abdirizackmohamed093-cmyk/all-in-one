@@ -15,7 +15,7 @@ export default function Footer() {
         <div className="lg:col-span-2 space-y-5">
           <Link href="/" className="flex flex-col select-none">
             <span className="text-lg font-bold tracking-[0.25em] text-foreground">
-              ALL IN ONE
+              ALL IN ONE.KE
             </span>
             <span className="text-[9px] uppercase tracking-[0.15em] text-accent font-medium mt-0.5">
               Everything You Need, All in One Place.
