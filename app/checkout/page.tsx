@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { addOrder } from "@/lib/firebase/orders";
 import { Loader2, ShieldCheck, Smartphone, Truck } from "lucide-react";
 
-const TILL_NUMBER = "4410 4410";
+const TILL_NUMBER = "3463030";
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat("en-KE", {

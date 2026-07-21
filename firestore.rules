@@ -17,29 +17,62 @@ service cloud.firestore {
 
     // 1. USERS COLLECTION PROTECTION MATRIX
     match /users/{userId} {
-      // Users can view or update their individual metadata documents cleanly.
       allow read, update: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
-      // Allows new sign-ups to register their document identity profile mapping.
       allow create: if isAuthenticated() && request.auth.uid == userId;
-      // Absolute restriction: Nobody can delete user records except explicit system tools.
       allow delete: if isAdmin();
     }
 
     // 2. PRODUCTS COLLECTION PROTECTION MATRIX
     match /products/{productId} {
-      // Global read access enabled to optimize open catalog discovery.
       allow read: if true;
-      // Operational safety: Restricts write management to validated administrators.
+      allow write: if isAdmin();
+    }
+
+    // CATEGORIES COLLECTION PROTECTION MATRIX
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // BRANDS COLLECTION PROTECTION MATRIX
+    match /brands/{brandId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // PACKAGES COLLECTION PROTECTION MATRIX
+    match /packages/{packageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // HERO SLIDES COLLECTION PROTECTION MATRIX
+    match /heroSlides/{slideId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // PRODUCT ROWS COLLECTION PROTECTION MATRIX
+    match /productRows/{rowId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    // CATEGORY TILES COLLECTION PROTECTION MATRIX
+    match /categoryTiles/{tileId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // SIDE PROMOS COLLECTION PROTECTION MATRIX
+    match /sidePromos/{promoId} {
+      allow read: if true;
       allow write: if isAdmin();
     }
 
     // 3. ORDERS COLLECTION PROTECTION MATRIX
     match /orders/{orderId} {
-      // Customers can only pull lists matching their distinct buyer UID.
       allow read: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
-      // Customers can initialize checkout purchases seamlessly.
       allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
-      // Fulfillment states (e.g., changing 'Processing' to 'Dispatched') are reserved for admins.
       allow update, delete: if isAdmin();
     }
   }

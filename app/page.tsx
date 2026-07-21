@@ -4,6 +4,9 @@ import Header from "@/components/layout/Header";
 import ProductCard, { Product } from "@/components/products/ProductCard";
 import Footer from "@/components/Footer";
 import BrandsSection from "@/components/storefront/BrandsSection";
+import HeroSlider from "@/components/storefront/HeroSlider";
+import ProductRowSection from "@/components/storefront/ProductRowSection";
+import CategoryTilesSection from "@/components/storefront/CategoryTilesSection";
 import { fetchLiveProducts } from "@/lib/firebase/products";
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,7 +23,15 @@ export default function Home() {
     <div className="min-h-screen bg-white text-neutral-900 flex flex-col justify-between">
       <div>
         <Header />
-        
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+          <HeroSlider />
+        </div>
+
+        <CategoryTilesSection />
+
+        <ProductRowSection />
+
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center max-w-xl mx-auto mb-16">
             <h1 className="font-serif text-3xl font-bold tracking-wide text-neutral-900">

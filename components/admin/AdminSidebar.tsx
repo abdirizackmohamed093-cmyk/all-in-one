@@ -13,6 +13,11 @@ import {
   Ticket,
   BarChart3,
   Settings,
+  Gift,
+  Image,
+  Rows3,
+  LayoutGrid,
+  Megaphone,
 } from "lucide-react";
 
 const navItems = [
@@ -20,6 +25,11 @@ const navItems = [
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Categories", href: "/admin/categories", icon: FolderTree },
   { label: "Brands", href: "/admin/brands", icon: Tag },
+  { label: "Special Packages", href: "/admin/packages", icon: Gift },
+  { label: "Hero Slides", href: "/admin/hero-slides", icon: Image },
+  { label: "Product Rows", href: "/admin/product-rows", icon: Rows3 },
+  { label: "Category Tiles", href: "/admin/category-tiles", icon: LayoutGrid },
+  { label: "Side Promos", href: "/admin/side-promos", icon: Megaphone },
   { label: "Orders", href: "/admin/orders", icon: ClipboardList },
   { label: "Customers", href: "/admin/customers", icon: Users },
   { label: "Coupons", href: "/admin/coupons", icon: Ticket },
