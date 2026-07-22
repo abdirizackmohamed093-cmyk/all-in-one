@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   RotateCcw,
 } from "lucide-react";
+import { getCategoryIcon } from "@/lib/categoryIcons";
 
 const TRUST_BADGES = [
   { icon: Truck, title: "Fast Delivery", subtitle: "Across Kenya" },
@@ -210,71 +211,83 @@ export default function Header() {
 
       {/* Category strip */}
       <div className="bg-primary shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-8 relative">
-          <div className="flex items-center gap-8">
-            <div ref={dropdownRef} className="relative shrink-0">
-              <button
-                onClick={() => setCategoriesOpen(!categoriesOpen)}
-                className="flex items-center gap-2.5 text-white text-sm font-bold uppercase tracking-wide hover:opacity-90 transition-opacity bg-black/10 px-4 py-2 rounded-md"
-              >
-                <Menu className="w-4 h-4" />
-                All Categories
-                <ChevronDown className={`w-4 h-4 transition-transform ${categoriesOpen ? "rotate-180" : ""}`} />
-              </button>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col gap-2">
+          {/* Row 1: All Categories + nav + trust badges */}
+          <div className="h-10 flex items-center justify-between gap-8 relative">
+            <div className="flex items-center gap-8">
+              <div ref={dropdownRef} className="relative shrink-0">
+                <button
+                  onClick={() => setCategoriesOpen(!categoriesOpen)}
+                  className="flex items-center gap-2.5 text-white text-sm font-bold uppercase tracking-wide hover:opacity-90 transition-opacity bg-black/10 px-4 py-2 rounded-md"
+                >
+                  <Menu className="w-4 h-4" />
+                  All Categories
+                  <ChevronDown className={`w-4 h-4 transition-transform ${categoriesOpen ? "rotate-180" : ""}`} />
+                </button>
 
-              {categoriesOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-white shadow-xl rounded-lg border border-neutral-200 py-2 z-50 overflow-hidden">
-                  {categories.length === 0 ? (
-                    <p className="px-5 py-3 text-sm text-neutral-400">No categories yet.</p>
-                  ) : (
-                    categories.map((c) => (
-                      <Link
-                        key={c.id}
-                        href={"/shop/" + c.slug}
-                        onClick={() => setCategoriesOpen(false)}
-                        className="block px-5 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary transition-colors border-b border-neutral-50 last:border-b-0"
-                      >
-                        {c.name}
-                      </Link>
-                    ))
-                  )}
-                </div>
-              )}
+                {categoriesOpen && (
+                  <div className="absolute top-full left-0 mt-2 w-72 bg-white shadow-xl rounded-lg border border-neutral-200 py-2 z-50 overflow-hidden">
+                    {categories.length === 0 ? (
+                      <p className="px-5 py-3 text-sm text-neutral-400">No categories yet.</p>
+                    ) : (
+                      categories.map((c) => {
+                        const Icon = getCategoryIcon(c.name);
+                        return (
+                          <Link
+                            key={c.id}
+                            href={"/shop/" + c.slug}
+                            onClick={() => setCategoriesOpen(false)}
+                            className="flex items-center gap-3 px-5 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50 hover:text-primary transition-colors border-b border-neutral-50 last:border-b-0"
+                          >
+                            <Icon className="w-4 h-4 text-neutral-400 shrink-0" />
+                            {c.name}
+                          </Link>
+                        );
+                      })
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <div className="hidden md:block w-px h-6 bg-white/20 shrink-0" />
+
+              <nav className="hidden md:flex items-center gap-6 overflow-x-auto">
+                {categories.slice(0, 6).map((c) => {
+                  const Icon = getCategoryIcon(c.name);
+                  return (
+                    <Link
+                      key={c.id}
+                      href={"/shop/" + c.slug}
+                      className="flex items-center gap-1 text-white text-xs font-semibold uppercase tracking-wide hover:text-white/80 transition-colors whitespace-nowrap relative group"
+                    >
+                      <Icon className="w-3 h-3" />
+                      {c.name}
+                      <span className="absolute -bottom-4 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-200" />
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
 
-            <div className="hidden md:block w-px h-6 bg-white/20 shrink-0" />
-
-            <nav className="hidden md:flex items-center gap-8 overflow-x-auto">
-              {categories.slice(0, 6).map((c) => (
-                <Link
-                  key={c.id}
-                  href={"/shop/" + c.slug}
-                  className="text-white text-sm font-semibold uppercase tracking-wide hover:text-white/80 transition-colors whitespace-nowrap relative group"
-                >
-                  {c.name}
-                  <span className="absolute -bottom-4 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-200" />
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          <div className="hidden lg:flex items-center gap-6 flex-1 justify-center">
-            {TRUST_BADGES.map((badge) => {
-              const Icon = badge.icon;
-              return (
-                <div key={badge.title} className="flex items-center gap-2 text-white whitespace-nowrap">
-                  <Icon className="w-4 h-4 shrink-0 opacity-90" />
-                  <div className="leading-tight">
-                    <p className="text-xs font-semibold">{badge.title}</p>
-                    <p className="text-[10px] text-white/70">{badge.subtitle}</p>
+            <div className="hidden lg:flex items-center gap-6 flex-1 justify-center">
+              {TRUST_BADGES.map((badge) => {
+                const Icon = badge.icon;
+                return (
+                  <div key={badge.title} className="flex items-center gap-2 text-white whitespace-nowrap">
+                    <Icon className="w-4 h-4 shrink-0 opacity-90" />
+                    <div className="leading-tight">
+                      <p className="text-xs font-semibold">{badge.title}</p>
+                      <p className="text-[10px] text-white/70">{badge.subtitle}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
 
+          {/* Row 2: Special Packages, stacked directly under All Categories */}
           {packageCategories.length > 0 && (
-            <div ref={packagesDropdownRef} className="relative shrink-0">
+            <div ref={packagesDropdownRef} className="relative shrink-0 self-start">
               <button
                 onClick={() => setPackagesOpen(!packagesOpen)}
                 className="flex items-center gap-2.5 text-white text-sm font-bold uppercase tracking-wide hover:opacity-90 transition-opacity bg-black/10 px-4 py-2 rounded-md"
@@ -285,7 +298,7 @@ export default function Header() {
               </button>
 
               {packagesOpen && (
-                <div className="absolute top-full right-0 mt-2 w-72 bg-white shadow-xl rounded-lg border border-neutral-200 py-2 z-50 overflow-hidden">
+                <div className="absolute top-full left-0 mt-2 w-72 bg-white shadow-xl rounded-lg border border-neutral-200 py-2 z-50 overflow-hidden">
                   {packageCategories.map((pkg) => (
                     <Link
                       key={pkg.category}
