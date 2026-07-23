@@ -64,7 +64,7 @@ export default function AiChatWidget() {
     <>
       {open && (
         <div className="fixed bottom-40 right-6 z-50 w-80 max-w-[calc(100vw-3rem)] bg-white rounded-lg shadow-2xl border border-neutral-200 flex flex-col overflow-hidden">
-          <div className="bg-burgundy text-white px-4 py-3 flex items-center justify-between">
+          <div className="bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Bot className="w-5 h-5" />
               <span className="text-sm font-bold">ALL IN ONE Assistant</span>
@@ -83,7 +83,7 @@ export default function AiChatWidget() {
                 <div
                   className={`max-w-[85%] px-3 py-2 rounded-lg text-sm leading-relaxed ${
                     m.role === "user"
-                      ? "bg-burgundy text-white rounded-br-none"
+                      ? "bg-primary text-primary-foreground rounded-br-none"
                       : "bg-white border border-neutral-200 text-neutral-700 rounded-bl-none"
                   }`}
                 >
@@ -107,12 +107,12 @@ export default function AiChatWidget() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
               placeholder="Type a message..."
-              className="flex-1 text-sm px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:border-burgundy"
+              className="flex-1 text-sm px-3 py-2 border border-neutral-200 rounded-md focus:outline-none focus:border-primary"
             />
             <button
               onClick={handleSend}
               disabled={loading || !input.trim()}
-              className="bg-burgundy text-white p-2 rounded-md disabled:opacity-40 hover:opacity-90 transition-opacity"
+              className="bg-primary text-primary-foreground p-2 rounded-md disabled:opacity-40 hover:opacity-90 transition-opacity"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -122,7 +122,7 @@ export default function AiChatWidget() {
 
       <button
         onClick={() => setOpen(!open)}
-        className="fixed bottom-24 right-6 z-50 bg-burgundy hover:opacity-90 text-white p-4 rounded-full shadow-lg transition-all"
+        className="fixed bottom-24 right-6 z-50 bg-primary hover:opacity-90 text-primary-foreground p-4 rounded-full shadow-lg transition-all"
       >
         {open ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
       </button>
