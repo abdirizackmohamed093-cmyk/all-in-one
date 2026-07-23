@@ -10,6 +10,10 @@
 
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-hover: hsl(var(--primary-hover));
+  --color-primary-active: hsl(var(--primary-active));
+  --color-primary-light: hsl(var(--primary-light));
+
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
   --color-accent: hsl(var(--accent));
@@ -32,7 +36,7 @@
   --color-cta: hsl(var(--cta));
   --color-cta-hover: hsl(var(--cta-hover));
 
-  /* Brand palette from the ALL IN ONE spec. Plain hex, not HSL vars â€”
+  /* Brand palette from the ALL IN ONE spec. Plain hex, not HSL vars —
      these are fixed brand colors, not theme-switchable tokens. */
   --color-burgundy: #6D1B2E;
   --color-charcoal: #2B2B2B;
@@ -51,15 +55,21 @@
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
 
-    /* Brand Corporate Identity */
-    --primary: 4 84% 51%;
+    /* Brand Corporate Identity — now driven by the actual burgundy spec,
+       not a generic bright red. */
+    --primary: 346 60% 27%;          /* #6D1B2E — your spec'd burgundy */
     --primary-foreground: 0 0% 98%;
+    --primary-hover: 346 65% 20%;    /* darker burgundy on hover — depth, not glare */
+    --primary-active: 346 70% 14%;   /* darker still when pressed */
+    --primary-light: 346 45% 94%;    /* whisper-soft tint for subtle backgrounds */
 
     --secondary: 0 0% 100%;
     --secondary-foreground: 240 5.9% 10%;
 
-    --accent: 4 84% 51%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent is now the gold from your spec — used sparingly for premium
+       highlight moments (small badges, dividers, hover accents), not CTAs. */
+    --accent: 41 54% 54%;            /* #C9A24B gold */
+    --accent-foreground: 0 0% 15%;   /* charcoal text/icon on gold */
 
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
@@ -67,17 +77,20 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 4 84% 51%;
+    --ring: 346 60% 27%;             /* matches primary for focus rings */
 
-    /* Conversion & Psychology Palette */
+    /* Conversion & Psychology Palette — left punchy on purpose.
+       Urgency/discount tags SHOULD pop brighter than nav chrome; that
+       contrast is what makes them read as deals rather than décor. */
     --success: 142 71% 35%;
     --success-foreground: 0 0% 98%;
     --urgency: 24 95% 53%;
     --urgency-foreground: 0 0% 100%;
     --discount: 0 84% 55%;
     --discount-foreground: 0 0% 100%;
-    --cta: 4 84% 51%;
-    --cta-hover: 4 84% 42%;
+
+    --cta: 346 60% 27%;
+    --cta-hover: 346 65% 20%;
 
     --radius: 0.5rem;
   }
@@ -85,6 +98,18 @@
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
+
+    --primary: 346 55% 38%;
+    --primary-hover: 346 60% 30%;
+    --primary-active: 346 65% 22%;
+    --primary-light: 346 30% 16%;
+
+    --accent: 41 48% 48%;
+    --accent-foreground: 0 0% 10%;
+
+    --ring: 346 55% 38%;
+    --cta: 346 55% 38%;
+    --cta-hover: 346 60% 30%;
   }
 
   body {
