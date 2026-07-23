@@ -155,7 +155,7 @@ function PromoSlide({ promo }: { promo: SidePromo }) {
         )}
 
         {promo.ctaLabel && (
-          <a href={promo.href || "#"} className="relative overflow-hidden inline-block mt-4 bg-white text-neutral-900 text-xs font-bold px-4 py-2 rounded-full shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(255,255,255,0.6)]">
+          <a href={promo.href || "#"} className="relative overflow-hidden inline-block mt-4 bg-primary hover:bg-primary-hover text-primary-foreground text-xs font-bold px-4 py-2 rounded-full shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(220,38,38,0.5)]">
             <span className="relative z-10">{promo.ctaLabel}</span>
             <span className="absolute inset-0 -left-full w-1/2 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shine" />
           </a>
