@@ -86,7 +86,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
       {/* Main row: logo, search, account, cart */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-0 sm:h-16 flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-0 sm:h-16 flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-6">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
           <img src="/logo.png" alt="All In One" className="h-10 sm:h-14 md:h-20 w-auto" />
         </Link>
@@ -109,20 +109,18 @@ export default function Header() {
           </div>
         </form>
 
-        <div className="flex items-center gap-2 sm:gap-5 shrink-0 ml-auto sm:ml-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto sm:ml-0">
           {user ? (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs text-neutral-600 font-sans font-medium">
-                <User className="w-3.5 h-3.5 text-neutral-400" />
-                <span className="hidden sm:inline max-w-[120px] truncate">
-                  {user.email}
-                </span>
+            <div className="flex items-center gap-1.5">
+              <div className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-600 font-sans font-medium pr-2">
+                <User className="w-3.5 h-3.5 text-primary" />
+                <span className="max-w-[120px] truncate">{user.email}</span>
               </div>
               {isAdmin && (
                 <Link
                   href="/admin"
                   target="_blank"
-                  className="inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-neutral-400 hover:text-primary transition-colors"
+                  className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-2 rounded-md transition-colors"
                   title="Admin Dashboard"
                 >
                   <LayoutDashboard className="w-3.5 h-3.5" />
@@ -131,7 +129,7 @@ export default function Header() {
               )}
               <Link
                 href="/account/orders"
-                className="inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-neutral-400 hover:text-primary transition-colors"
+                className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-2 rounded-md transition-colors"
                 title="My Orders"
               >
                 <Package className="w-3.5 h-3.5" />
@@ -139,7 +137,7 @@ export default function Header() {
               </Link>
               <button
                 onClick={() => logout()}
-                className="inline-flex items-center gap-1 text-[10px] tracking-wider uppercase font-bold text-neutral-400 hover:text-primary transition-colors"
+                className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-2 rounded-md transition-colors"
                 title="Secure Session Exit"
               >
                 <LogOut className="w-3.5 h-3.5" />
@@ -149,7 +147,7 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 text-xs font-sans font-bold tracking-widest uppercase text-neutral-700 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-1.5 bg-primary text-white text-xs font-sans font-bold tracking-widest uppercase px-3 py-2 rounded-md hover:opacity-90 transition-opacity"
             >
               <User className="w-3.5 h-3.5" />
               Sign In
@@ -159,11 +157,11 @@ export default function Header() {
           <div ref={helpDropdownRef} className="relative">
             <button
               onClick={() => setHelpOpen(!helpOpen)}
-              className="inline-flex items-center gap-1.5 text-xs font-sans font-bold tracking-widest uppercase text-neutral-700 hover:text-primary transition-colors"
+              className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-sans font-bold tracking-wider uppercase px-2.5 py-2 rounded-md transition-colors"
             >
-              <HelpCircle className="w-4 h-4" />
+              <HelpCircle className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Help</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${helpOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-3 h-3 transition-transform ${helpOpen ? "rotate-180" : ""}`} />
             </button>
 
             {helpOpen && (
@@ -198,10 +196,10 @@ export default function Header() {
             )}
           </div>
 
-          <Link href="/cart" className="relative p-2 text-neutral-700 hover:text-primary transition-colors">
-            <ShoppingBag className="w-5 h-5" />
+          <Link href="/cart" className="relative bg-primary/10 hover:bg-primary hover:text-white text-primary p-2.5 rounded-md transition-colors">
+            <ShoppingBag className="w-4 h-4" />
             {cartCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-primary text-primary-foreground font-sans text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 bg-primary text-white font-sans text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center border-2 border-white">
                 {cartCount}
               </span>
             )}
