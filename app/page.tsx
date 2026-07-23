@@ -5,6 +5,7 @@ import ProductCard, { Product } from "@/components/products/ProductCard";
 import Footer from "@/components/Footer";
 import BrandsSection from "@/components/storefront/BrandsSection";
 import HeroSlider from "@/components/storefront/HeroSlider";
+import TrustBadgesStrip from "@/components/storefront/TrustBadgesStrip";
 import ProductRowSection from "@/components/storefront/ProductRowSection";
 import CategoryTilesSection from "@/components/storefront/CategoryTilesSection";
 import { fetchLiveProducts } from "@/lib/firebase/products";
@@ -27,6 +28,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
           <HeroSlider />
         </div>
+
+        <TrustBadgesStrip />
 
         <CategoryTilesSection />
 

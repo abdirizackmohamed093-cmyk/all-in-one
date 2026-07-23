@@ -1,4 +1,5 @@
 import Script from "next/script";
+import { Inter } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { CartProvider } from "@/context/CartContext";
 import TawkIdentify from "@/components/TawkIdentify";
@@ -6,14 +7,20 @@ import AiChatWidget from "@/components/AiChatWidget";
 import PopupAd from "@/components/PopupAd";
 import "@/app/globals.css"; // Make sure your global styles path matches
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={inter.variable}>
+      <body className="font-sans">
         <AuthProvider>
           <CartProvider>
             {children}

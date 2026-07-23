@@ -69,6 +69,22 @@ function useCountdown(endsAt: string) {
   return remaining;
 }
 
+// Renders a slide title with luxury-red accents.
+// In the admin panel, wrap the word(s) you want in red with asterisks,
+// e.g. "Discover Your *Signature* Style" -> "Signature" renders in luxury red.
+function renderHighlightedTitle(title: string) {
+  const parts = title.split(/(\*[^*]+\*)/g);
+  return parts.map((part, i) =>
+    part.startsWith("*") && part.endsWith("*") ? (
+      <span key={i} className="text-[#C1121F]">
+        {part.slice(1, -1)}
+      </span>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    )
+  );
+}
+
 function TrustBadgeStrip() {
   const [index, setIndex] = useState(0);
 
@@ -126,7 +142,7 @@ function PromoSlide({ promo }: { promo: SidePromo }) {
           </div>
         )}
 
-       {promo.ctaLabel && (
+        {promo.ctaLabel && (
           <a href={promo.href || "#"} className="relative overflow-hidden inline-block mt-4 bg-white text-neutral-900 text-xs font-bold px-4 py-2 rounded-full shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_18px_rgba(255,255,255,0.6)]">
             <span className="relative z-10">{promo.ctaLabel}</span>
             <span className="absolute inset-0 -left-full w-1/2 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shine" />
@@ -207,7 +223,7 @@ export default function HeroSlider() {
   return (
     <div className="flex flex-col md:flex-row gap-4">
       <div
-        className={`relative aspect-[3/1] md:aspect-[4/1] max-h-[320px] rounded-lg overflow-hidden border border-neutral-200 shadow-sm group ${
+        className={`relative aspect-[21/20] max-h-[360px] rounded-lg overflow-hidden border border-neutral-200 shadow-sm group ${
           hasPromos ? "w-full md:w-[72%]" : "w-full"
         }`}
       >
@@ -219,34 +235,42 @@ export default function HeroSlider() {
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/35 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/40 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
 
-        <div key={`text-${current}`} className="absolute left-6 top-1/2 -translate-y-1/2 max-w-md text-white">
+        <div
+          key={`text-${current}`}
+          className="absolute left-8 md:left-14 top-1/2 -translate-y-1/2 max-w-lg text-white"
+        >
           <h2
-            className="text-2xl md:text-3xl font-bold mb-2 animate-fade-slide-up"
+            className="text-[36px] md:text-[52px] font-extrabold leading-[1.08] tracking-tight mb-5 animate-fade-slide-up"
             style={{ animationDelay: "100ms" }}
           >
-            {slide.title}
+            {renderHighlightedTitle(slide.title)}
           </h2>
           <p
-            className="text-sm md:text-base mb-4 animate-fade-slide-up"
-            style={{ animationDelay: "220ms" }}
+            className="text-base md:text-xl font-medium text-white/80 leading-relaxed max-w-md mb-9 animate-fade-slide-up"
+            style={{ animationDelay: "250ms" }}
           >
             {slide.subtitle}
           </p>
           <div
-            className="flex items-center gap-3 animate-fade-slide-up"
-            style={{ animationDelay: "340ms" }}
+            className="flex items-center gap-4 animate-fade-slide-up"
+            style={{ animationDelay: "400ms" }}
           >
-          
             {slide.ctaLabel && (
-              <a href={slide.ctaHref} className="inline-block bg-white text-neutral-900 px-4 py-2 rounded text-sm font-semibold shadow-md transition-transform hover:-translate-y-0.5">
+              <a
+                href={slide.ctaHref}
+                className="inline-block bg-[#7B1E3A] hover:bg-[#8F1537] text-white px-7 py-3.5 rounded-2xl text-sm font-semibold tracking-wide shadow-[0_8px_24px_rgba(123,30,58,0.45)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(123,30,58,0.6)]"
+              >
                 {slide.ctaLabel}
               </a>
             )}
-            <a href={slide.secondaryCtaHref || "/shop"} className="inline-block bg-white/10 backdrop-blur-sm border border-white/40 text-white px-4 py-2 rounded text-sm font-medium transition-all hover:bg-white/20 hover:-translate-y-0.5">
-              {slide.secondaryCtaLabel || "Explore Collection"}
+            <a
+              href={slide.secondaryCtaHref || "/shop"}
+              className="inline-block bg-transparent border border-white/50 text-white px-7 py-3.5 rounded-2xl text-sm font-medium tracking-wide transition-all duration-300 hover:bg-white/10 hover:border-white hover:-translate-y-0.5"
+            >
+              {slide.secondaryCtaLabel || "Discover More"}
             </a>
           </div>
         </div>

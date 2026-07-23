@@ -18,10 +18,12 @@ import {
   Rows3,
   LayoutGrid,
   Megaphone,
+  Sparkles,
 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+  { label: "AI Assistant", href: "/admin/ai-assistant", icon: Sparkles },
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Categories", href: "/admin/categories", icon: FolderTree },
   { label: "Brands", href: "/admin/brands", icon: Tag },
