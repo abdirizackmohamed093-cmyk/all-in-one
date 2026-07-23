@@ -76,7 +76,7 @@ function renderHighlightedTitle(title: string) {
   const parts = title.split(/(\*[^*]+\*)/g);
   return parts.map((part, i) =>
     part.startsWith("*") && part.endsWith("*") ? (
-      <span key={i} className="text-[#C1121F]">
+      <span key={i} className="text-primary">
         {part.slice(1, -1)}
       </span>
     ) : (
@@ -273,7 +273,7 @@ export default function HeroSlider() {
             {slide.ctaLabel && (
               <a
                 href={slide.ctaHref}
-                className="inline-block bg-[#7B1E3A] hover:bg-[#8F1537] text-white px-7 py-3.5 rounded-2xl text-sm font-semibold tracking-wide shadow-[0_8px_24px_rgba(123,30,58,0.45)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(123,30,58,0.6)]"
+                className="inline-block bg-primary hover:bg-primary-hover text-primary-foreground px-7 py-3.5 rounded-2xl text-sm font-semibold tracking-wide shadow-lg shadow-primary/40 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/50"
               >
                 {slide.ctaLabel}
               </a>
