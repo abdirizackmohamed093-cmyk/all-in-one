@@ -111,8 +111,20 @@ function PromoSlide({ promo }: { promo: SidePromo }) {
 
   return (
     <div
-      className={`relative overflow-hidden bg-gradient-to-br ${promo.gradient} rounded-[22px] p-5 h-full flex flex-col justify-between text-white shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]`}
+      className={`relative overflow-hidden bg-gradient-to-br ${promo.gradient} rounded-[22px] h-full flex flex-col justify-between text-white shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]`}
     >
+      {/* Background image, if set — sits behind everything with a dark overlay for text contrast */}
+      {promo.imageUrl && (
+        <>
+          <img
+            src={promo.imageUrl}
+            alt={promo.title}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
+        </>
+      )}
+
       {/* Glow behind icon */}
       <div className="absolute top-4 left-4 w-16 h-16 rounded-full bg-white/30 blur-2xl animate-glow-pulse pointer-events-none" />
 
@@ -122,7 +134,7 @@ function PromoSlide({ promo }: { promo: SidePromo }) {
       </div>
 
       {/* Glass panel content */}
-      <div className="relative z-10">
+      <div className="relative z-10 p-5">
         <div className="w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center mb-3 animate-float shadow-inner">
           <Icon className="w-5 h-5" />
         </div>
@@ -150,7 +162,7 @@ function PromoSlide({ promo }: { promo: SidePromo }) {
         )}
       </div>
 
-      <div className="relative z-10 mt-3">
+      <div className="relative z-10 mt-3 px-5 pb-5">
         <TrustBadgeStrip />
       </div>
     </div>

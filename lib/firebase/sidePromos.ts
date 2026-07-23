@@ -14,6 +14,7 @@ export interface SidePromo {
   id: string;
   title: string;
   subtitle: string;
+  imageUrl?: string;
   href: string;
   ctaLabel: string;
   icon: string;

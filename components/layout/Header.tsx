@@ -86,12 +86,12 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
       {/* Main row: logo, search, account, cart */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-0 sm:h-16 flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-6">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity shrink-0">
-          <img src="/logo.png" alt="All In One" className="h-20 w-auto" />
+          <img src="/logo.png" alt="All In One" className="h-10 sm:h-14 md:h-20 w-auto" />
         </Link>
 
-        <form onSubmit={handleSearch} className="flex-1 max-w-2xl">
+        <form onSubmit={handleSearch} className="order-3 sm:order-none w-full sm:w-auto sm:flex-1 sm:max-w-2xl">
           <div className="flex items-stretch border-2 border-primary rounded-md overflow-hidden">
             <input
               type="text"
@@ -109,7 +109,7 @@ export default function Header() {
           </div>
         </form>
 
-        <div className="flex items-center gap-5 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-5 shrink-0 ml-auto sm:ml-0">
           {user ? (
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 text-xs text-neutral-600 font-sans font-medium">

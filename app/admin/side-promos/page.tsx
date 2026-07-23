@@ -30,6 +30,7 @@ const GRADIENT_OPTIONS = [
 const EMPTY_FORM = {
   title: "",
   subtitle: "",
+  imageUrl: "",
   href: "",
   ctaLabel: "Shop Now",
   icon: ICON_OPTIONS[0].value,
@@ -73,6 +74,7 @@ export default function SidePromosAdminPage() {
     setForm({
       title: promo.title ?? "",
       subtitle: promo.subtitle ?? "",
+      imageUrl: promo.imageUrl ?? "",
       href: promo.href ?? "",
       ctaLabel: promo.ctaLabel ?? "Shop Now",
       icon: promo.icon ?? ICON_OPTIONS[0].value,
@@ -109,6 +111,26 @@ export default function SidePromosAdminPage() {
           value={form.subtitle}
           onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
         />
+
+        <div>
+          <label className="block text-xs text-neutral-500 mb-1">
+            Image URL (optional — shown behind/beside the text; leave blank to use icon + gradient only)
+          </label>
+          <input
+            className="w-full border rounded px-3 py-2"
+            placeholder="https://... or /uploads/promo.jpg"
+            value={form.imageUrl ?? ""}
+            onChange={(e) => setForm({ ...form, imageUrl: e.target.value })}
+          />
+          {form.imageUrl && (
+            <img
+              src={form.imageUrl}
+              alt="Preview"
+              className="mt-2 h-20 w-20 object-cover rounded border border-neutral-200"
+            />
+          )}
+        </div>
+
         <input
           className="w-full border rounded px-3 py-2"
           placeholder="Link (e.g. /shop/electronics)"
@@ -206,7 +228,15 @@ export default function SidePromosAdminPage() {
               key={promo.id}
               className="flex items-center justify-between border border-neutral-200 rounded px-4 py-3"
             >
-              <div className={`w-8 h-8 rounded bg-gradient-to-br ${promo.gradient}`} />
+              {promo.imageUrl ? (
+                <img
+                  src={promo.imageUrl}
+                  alt={promo.title}
+                  className="w-8 h-8 rounded object-cover"
+                />
+              ) : (
+                <div className={`w-8 h-8 rounded bg-gradient-to-br ${promo.gradient}`} />
+              )}
               <div className="flex-1 ml-3">
                 <p className="font-medium">{promo.title}</p>
                 <p className="text-xs text-neutral-500">
