@@ -75,8 +75,6 @@ export default function Header() {
     }
   };
 
-  // Dedupe packages by category so the dropdown shows one entry per
-  // category (e.g. "Maternity") instead of one entry per individual package.
   const packageCategories = Array.from(
     new Map(
       packages.filter((p) => p.category).map((p) => [p.category, p])
@@ -109,10 +107,10 @@ export default function Header() {
           </div>
         </form>
 
-        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto sm:ml-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0 ml-auto sm:ml-0 bg-primary sm:bg-transparent px-2 py-1.5 sm:px-0 sm:py-0 rounded-full sm:rounded-none">
           {user ? (
-            <div className="flex items-center gap-1.5">
-              <div className="hidden sm:flex items-center gap-1.5 text-xs text-neutral-600 font-sans font-medium pr-2">
+            <div className="flex items-center gap-1">
+              <div className="hidden lg:flex items-center gap-1.5 text-xs text-neutral-600 font-sans font-medium pr-2">
                 <User className="w-3.5 h-3.5 text-primary" />
                 <span className="max-w-[120px] truncate">{user.email}</span>
               </div>
@@ -120,48 +118,48 @@ export default function Header() {
                 <Link
                   href="/admin"
                   target="_blank"
-                  className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-2 rounded-md transition-colors"
+                  className="inline-flex items-center gap-1.5 text-white sm:text-primary sm:bg-primary/10 hover:bg-white/20 sm:hover:bg-primary sm:hover:text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-md transition-colors"
                   title="Admin Dashboard"
                 >
-                  <LayoutDashboard className="w-3.5 h-3.5" />
+                  <LayoutDashboard className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   <span className="hidden md:inline">Admin</span>
                 </Link>
               )}
               <Link
                 href="/account/orders"
-                className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-2 rounded-md transition-colors"
+                className="inline-flex items-center gap-1.5 text-white sm:text-primary sm:bg-primary/10 hover:bg-white/20 sm:hover:bg-primary sm:hover:text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-md transition-colors"
                 title="My Orders"
               >
-                <Package className="w-3.5 h-3.5" />
+                <Package className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 <span className="hidden md:inline">Orders</span>
               </Link>
               <button
                 onClick={() => logout()}
-                className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-bold uppercase tracking-wider px-2.5 py-2 rounded-md transition-colors"
+                className="inline-flex items-center gap-1.5 text-white sm:text-primary sm:bg-primary/10 hover:bg-white/20 sm:hover:bg-primary sm:hover:text-white text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-md transition-colors"
                 title="Secure Session Exit"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                 <span className="hidden md:inline">Exit</span>
               </button>
             </div>
           ) : (
             <Link
               href="/login"
-              className="inline-flex items-center gap-1.5 bg-primary text-white text-xs font-sans font-bold tracking-widest uppercase px-3 py-2 rounded-md hover:opacity-90 transition-opacity"
+              className="inline-flex items-center gap-1.5 text-white sm:bg-primary sm:text-white text-xs font-sans font-bold tracking-widest uppercase px-2 py-1.5 sm:px-3 sm:py-2 rounded-md hover:opacity-90 transition-opacity"
             >
-              <User className="w-3.5 h-3.5" />
-              Sign In
+              <User className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
+              <span className="hidden sm:inline">Sign In</span>
             </Link>
           )}
 
           <div ref={helpDropdownRef} className="relative">
             <button
               onClick={() => setHelpOpen(!helpOpen)}
-              className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary hover:text-white text-primary text-[10px] font-sans font-bold tracking-wider uppercase px-2.5 py-2 rounded-md transition-colors"
+              className="inline-flex items-center gap-1 text-white sm:text-primary sm:bg-primary/10 hover:bg-white/20 sm:hover:bg-primary sm:hover:text-white text-[10px] font-sans font-bold tracking-wider uppercase px-2 py-1.5 sm:px-2.5 sm:py-2 rounded-md transition-colors"
             >
-              <HelpCircle className="w-3.5 h-3.5" />
+              <HelpCircle className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
               <span className="hidden sm:inline">Help</span>
-              <ChevronDown className={`w-3 h-3 transition-transform ${helpOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`hidden sm:inline w-3 h-3 transition-transform ${helpOpen ? "rotate-180" : ""}`} />
             </button>
 
             {helpOpen && (
@@ -196,10 +194,10 @@ export default function Header() {
             )}
           </div>
 
-          <Link href="/cart" className="relative bg-primary/10 hover:bg-primary hover:text-white text-primary p-2.5 rounded-md transition-colors">
+          <Link href="/cart" className="relative text-white sm:text-primary sm:bg-primary/10 hover:bg-white/20 sm:hover:bg-primary sm:hover:text-white p-2 sm:p-2.5 rounded-md transition-colors">
             <ShoppingBag className="w-4 h-4" />
             {cartCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-white font-sans text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center border-2 border-white">
+              <span className="absolute -top-1 -right-1 bg-white text-primary sm:bg-primary sm:text-white font-sans text-[9px] font-bold h-4 w-4 rounded-full flex items-center justify-center border-2 border-primary sm:border-white">
                 {cartCount}
               </span>
             )}
@@ -210,7 +208,6 @@ export default function Header() {
       {/* Category strip */}
       <div className="bg-primary shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col gap-2">
-          {/* Row 1: All Categories + nav + trust badges */}
           <div className="h-10 flex items-center justify-between gap-8 relative">
             <div className="flex items-center gap-8">
               <div ref={dropdownRef} className="relative shrink-0">
@@ -283,7 +280,6 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Row 2: Special Packages, stacked directly under All Categories */}
           {packageCategories.length > 0 && (
             <div ref={packagesDropdownRef} className="relative shrink-0 self-start">
               <button
