@@ -21,15 +21,17 @@ export default function CategoryTilesSection() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-6 gap-2 sm:gap-4">
         {tiles.map((tile) => (
           <div
             key={tile.id}
-            className="group bg-primary rounded-lg p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+            className="group bg-primary rounded-lg p-1.5 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
           >
-            <p className="text-sm font-extrabold uppercase tracking-wide text-white mb-1">{tile.label}</p>
-            <div className="w-8 h-0.5 bg-white/70 rounded-full mb-3" />
-            <div className="w-full aspect-square rounded overflow-hidden mb-3">
+            <p className="text-[9px] sm:text-sm font-extrabold uppercase tracking-wide text-white mb-1 leading-tight line-clamp-2">
+              {tile.label}
+            </p>
+            <div className="hidden sm:block w-8 h-0.5 bg-white/70 rounded-full mb-3" />
+            <div className="w-full aspect-square rounded overflow-hidden mb-1.5 sm:mb-3">
               <img
                 src={tile.imageUrl || "/placeholder-product.jpg"}
                 alt={tile.label}
@@ -39,10 +41,10 @@ export default function CategoryTilesSection() {
             {tile.href && (
               <Link
                 href={tile.href}
-                className="inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-white transition-colors group-hover:text-white/80"
+                className="inline-flex items-center gap-1 text-[8px] sm:text-xs font-bold uppercase tracking-wide text-white transition-colors group-hover:text-white/80"
               >
-                {tile.linkLabel || "Shop Now"}
-                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
+                <span className="truncate">{tile.linkLabel || "Shop Now"}</span>
+                <ArrowRight className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             )}
           </div>

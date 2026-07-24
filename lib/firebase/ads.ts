@@ -1,8 +1,19 @@
 import { db } from "./config";
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  writeBatch,
+  serverTimestamp,
+} from "firebase/firestore";
 
 export interface PromoPopup {
-  isEnabled: boolean;
+  id?: string;
+  isActive: boolean;
   imageUrl: string;
   badge?: string; // e.g. "Featured Package", "Limited Offer", "Best Seller"
   title: string;
@@ -16,13 +27,14 @@ export interface PromoPopup {
   secondaryCtaHref?: string;
   endsAt?: string; // ISO date string — drives the countdown timer
   accentColor?: string; // hex, used for badge/price/button accents
+  createdAt?: any;
   updatedAt?: any;
 }
 
-const DOC_PATH = ["config", "promoPopup"] as const;
+const COLLECTION = "ads";
 
-const DEFAULT_PROMO: PromoPopup = {
-  isEnabled: false,
+export const emptyAd: Omit<PromoPopup, "id"> = {
+  isActive: false,
   imageUrl: "",
   badge: "",
   title: "",
@@ -38,27 +50,105 @@ const DEFAULT_PROMO: PromoPopup = {
   accentColor: "#7B1E3A",
 };
 
-export async function fetchPromoPopup(): Promise<PromoPopup> {
+// Admin list view — every campaign, active one sorted first.
+export async function fetchAllAds(): Promise<PromoPopup[]> {
   try {
-    const ref = doc(db, DOC_PATH[0], DOC_PATH[1]);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      return { ...DEFAULT_PROMO, ...snap.data() } as PromoPopup;
-    }
-    return DEFAULT_PROMO;
+    const snapshot = await getDocs(collection(db, COLLECTION));
+    const ads = snapshot.docs.map((d) => ({ id: d.id, ...d.data() })) as PromoPopup[];
+    return ads.sort((a, b) => Number(b.isActive) - Number(a.isActive));
   } catch (error) {
-    console.error("Error fetching promo popup:", error);
-    return DEFAULT_PROMO;
+    console.error("Error fetching ads:", error);
+    return [];
   }
 }
 
-export async function savePromoPopup(data: PromoPopup): Promise<boolean> {
+// Storefront — whichever single campaign is currently active, or null.
+export async function fetchActiveAd(): Promise<PromoPopup | null> {
   try {
-    const ref = doc(db, DOC_PATH[0], DOC_PATH[1]);
-    await setDoc(ref, { ...data, updatedAt: serverTimestamp() });
+    const ads = await fetchAllAds();
+    return ads.find((a) => a.isActive) || null;
+  } catch (error) {
+    console.error("Error fetching active ad:", error);
+    return null;
+  }
+}
+
+export async function fetchAdById(id: string): Promise<PromoPopup | null> {
+  try {
+    const ref = doc(db, COLLECTION, id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    return { id: snap.id, ...snap.data() } as PromoPopup;
+  } catch (error) {
+    console.error(`Error fetching ad (${id}):`, error);
+    return null;
+  }
+}
+
+// Ensures only one campaign is ever active — turns every other campaign's
+// isActive off before/when a given one is turned on.
+async function deactivateAllExcept(excludeId?: string) {
+  const snapshot = await getDocs(collection(db, COLLECTION));
+  const batch = writeBatch(db);
+  snapshot.docs.forEach((d) => {
+    if (d.id !== excludeId && d.data().isActive) {
+      batch.update(d.ref, { isActive: false });
+    }
+  });
+  await batch.commit();
+}
+
+export async function createAd(data: Omit<PromoPopup, "id">): Promise<string | null> {
+  try {
+    const docRef = await addDoc(collection(db, COLLECTION), {
+      ...data,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    if (data.isActive) {
+      await deactivateAllExcept(docRef.id);
+    }
+    return docRef.id;
+  } catch (error) {
+    console.error("Error creating ad:", error);
+    return null;
+  }
+}
+
+export async function updateAd(
+  id: string,
+  data: Partial<Omit<PromoPopup, "id">>
+): Promise<boolean> {
+  try {
+    const ref = doc(db, COLLECTION, id);
+    await updateDoc(ref, { ...data, updatedAt: serverTimestamp() });
+    if (data.isActive) {
+      await deactivateAllExcept(id);
+    }
     return true;
   } catch (error) {
-    console.error("Error saving promo popup:", error);
+    console.error(`Error updating ad (${id}):`, error);
+    return false;
+  }
+}
+
+export async function setActiveAd(id: string): Promise<boolean> {
+  try {
+    await deactivateAllExcept(id);
+    await updateDoc(doc(db, COLLECTION, id), { isActive: true, updatedAt: serverTimestamp() });
+    return true;
+  } catch (error) {
+    console.error(`Error setting active ad (${id}):`, error);
+    return false;
+  }
+}
+
+export async function deleteAd(id: string): Promise<boolean> {
+  try {
+    await deleteDoc(doc(db, COLLECTION, id));
+    return true;
+  } catch (error) {
+    console.error(`Error deleting ad (${id}):`, error);
     return false;
   }
 }

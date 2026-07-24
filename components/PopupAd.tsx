@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { X, Check, Truck, ShieldCheck, Sparkles as SparklesIcon, BadgePercent, RotateCcw, Lock } from "lucide-react";
-import { fetchPromoPopup, PromoPopup } from "@/lib/firebase/ads";
+import { fetchActiveAd, PromoPopup } from "@/lib/firebase/ads";
 
 const SESSION_KEY = "promoPopupShown";
 const AUTO_OPEN_DELAY_MS = 5000;
@@ -63,8 +63,8 @@ export default function PopupAd() {
     if (typeof window === "undefined") return;
     if (sessionStorage.getItem(SESSION_KEY)) return;
 
-    fetchPromoPopup().then((data) => {
-      if (!data.isEnabled || !data.imageUrl || !data.title) return;
+    fetchActiveAd().then((data) => {
+      if (!data || !data.isActive || !data.imageUrl || !data.title) return;
 
       const timer = setTimeout(() => {
         setPromo(data);
