@@ -25,20 +25,20 @@ const BADGES = [
 
 export default function TrustBadgesStrip() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
         {BADGES.map((badge, i) => {
           const Icon = badge.icon;
           return (
-            <div key={i} className="flex items-center gap-2">
-              <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <Icon className="w-3.5 h-3.5 text-primary" />
+            <div key={i} className="flex items-center gap-1.5">
+              <div className="w-4 h-4 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <Icon className="w-2.5 h-2.5 text-primary" />
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] font-bold text-neutral-900 truncate">
+                <p className="text-[9px] font-bold text-neutral-900 truncate">
                   {badge.title}
                 </p>
-                <p className="text-[10px] text-neutral-500 truncate">
+                <p className="text-[8px] text-neutral-500 truncate">
                   {badge.subtitle}
                 </p>
               </div>
