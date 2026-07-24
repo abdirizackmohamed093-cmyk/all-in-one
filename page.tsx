@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import DataTable, { Column } from "@/components/admin/DataTable";
