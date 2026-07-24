@@ -57,7 +57,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       : 0;
 
   return (
-    <div className="group relative flex flex-col bg-white overflow-hidden transition-all duration-300 w-full">
+    <div className="group relative flex flex-col bg-white rounded-lg overflow-hidden transition-all duration-300 w-full p-2 border border-neutral-100">
 
       {/* Clickable Image Container */}
       <Link href={`/products/${product.id}`} className="relative w-full aspect-square bg-neutral-100 overflow-hidden rounded-lg border border-neutral-200 block">
@@ -113,13 +113,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* Product Information Details */}
-      <div className="pt-3 pb-1 flex flex-col justify-between flex-1">
+      <div className="pt-3 pb-2.5 px-2.5 flex flex-col justify-between flex-1 bg-primary rounded-b-lg -mx-2 -mb-2 mt-1">
         <div>
-          <span className="inline-block text-[10px] tracking-wide uppercase text-burgundy font-bold mb-1.5">
+          <span className="inline-block text-[10px] tracking-wide uppercase text-white/80 font-bold mb-1.5">
             {product.category}
           </span>
           <Link href={`/products/${product.id}`}>
-            <h3 className="font-sans text-sm font-semibold text-neutral-900 tracking-tight line-clamp-2 leading-snug group-hover:text-burgundy transition-colors duration-200">
+            <h3 className="font-sans text-sm font-semibold text-white tracking-tight line-clamp-2 leading-snug transition-colors duration-200">
               {product.name}
             </h3>
           </Link>
@@ -128,15 +128,15 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="mt-2 flex items-center gap-2">
           {showFlashPrice ? (
             <>
-              <span className="text-base font-bold font-serif text-red-600">
+              <span className="text-base font-bold font-serif text-white">
                 {formatCurrency(product.flashSalePrice!)}
               </span>
-              <span className="text-xs text-neutral-400 line-through">
+              <span className="text-xs text-white/60 line-through">
                 {formatCurrency(product.price)}
               </span>
             </>
           ) : (
-            <span className="text-base font-bold font-serif text-neutral-900">
+            <span className="text-base font-bold font-serif text-white">
               {formatCurrency(product.price)}
             </span>
           )}

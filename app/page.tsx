@@ -47,7 +47,7 @@ export default function Home() {
           
           {loading ? (
             /* Elegant loading skeleton cards mimicking high-end wireframes */
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-8">
+            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 gap-y-6">
               {[1, 2, 3].map((skeletonId) => (
                 <div key={skeletonId} className="w-full max-w-sm mx-auto flex flex-col gap-4 animate-pulse">
                   <div className="w-full aspect-[3/4] bg-neutral-100 rounded border border-neutral-200" />
@@ -62,7 +62,7 @@ export default function Home() {
               <p className="text-sm text-neutral-500">The showroom ledger is currently empty.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-8">
+            <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 gap-y-6">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}

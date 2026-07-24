@@ -32,8 +32,6 @@
   --color-cta: hsl(var(--cta));
   --color-cta-hover: hsl(var(--cta-hover));
 
-  /* Brand palette from the ALL IN ONE spec. Plain hex, not HSL vars â€”
-     these are fixed brand colors, not theme-switchable tokens. */
   --color-burgundy: #6D1B2E;
   --color-charcoal: #2B2B2B;
   --color-gold: #C9A24B;
