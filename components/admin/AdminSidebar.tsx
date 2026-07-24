@@ -20,6 +20,7 @@ import {
   LayoutGrid,
   Megaphone,
   Sparkles,
+  Percent,
   X,
 } from "lucide-react";
 
@@ -31,6 +32,7 @@ const navItems = [
   { label: "Brands", href: "/admin/brands", icon: Tag },
   { label: "Special Packages", href: "/admin/packages", icon: Gift },
   { label: "Hero Slides", href: "/admin/hero-slides", icon: Image },
+  { label: "Promotional Popup", href: "/admin/ad", icon: Percent },
   { label: "Product Rows", href: "/admin/product-rows", icon: Rows3 },
   { label: "Category Tiles", href: "/admin/category-tiles", icon: LayoutGrid },
   { label: "Side Promos", href: "/admin/side-promos", icon: Megaphone },
